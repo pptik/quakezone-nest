@@ -1,0 +1,1068 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Aggregate {
+  count: Int!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+"""Geographical point."""
+type GeoPoint {
+  """Always `Point`."""
+  type: String
+
+  """Geographical coordinates as [longitude, latitude]."""
+  coordinates: [Float!]
+}
+
+interface Node {
+  id: ID!
+}
+
+input Ordering {
+  sort: String!
+  direction: SortDirection
+}
+
+type PageInfo {
+  hasNextPage: Boolean
+  hasPreviousPage: Boolean
+  startCursor: String
+  endCursor: String
+}
+
+"""Information on earthquakes."""
+type Quake implements Node {
+  id: ID!
+  name: String
+  usgsId: String
+  usgsName: String
+  originTime: DateTime
+  usgsOriginTime: DateTime
+  irisOriginTime: DateTime
+  noaaLocation: String
+  noviantyRuptureDuration: Float
+  noviantyPWaveDominantPeriod: Float
+  noviantyT0xtd: Float
+  noviantyMw: Float
+  mw: Float
+  usgsMw: Float
+  irisMw: Float
+  noaaTsunami: Boolean
+  noaaTsunamiEventId: Int
+  unknown1: Int
+  usgsDepth: Float
+  collectionName: String
+  collectionPos: Int
+  usgsEpicenter: GeoPoint
+  tsunamiSourceId: String
+}
+
+type QuakesConnection {
+  pageInfo: PageInfo!
+  edges: [QuakesEdge!]!
+  aggregate: Aggregate
+}
+
+type QuakesEdge {
+  node: Quake!
+  cursor: String!
+}
+
+type Query {
+  quake(id: ID!): Quake
+  quakes(before: String, last: Float, after: String, first: Float, orderBy: [Ordering!]): QuakesConnection!
+  tsunamiRunup(id: ID!): TsunamiRunup
+  tsunamiRunups(before: String, last: Float, after: String, first: Float, orderBy: [Ordering!]): TsunamiRunupsConnection!
+  tsunamiSource(id: ID!): TsunamiSource
+  tsunamiSources(before: String, last: Float, after: String, first: Float, orderBy: [Ordering!]): TsunamiSourcesConnection!
+}
+
+enum SortDirection {
+  asc
+  desc
+}
+
+"""
+Information on locations where tsunami effects occurred.
+
+Data include: arrival date and time, travel time, maximum water heights,
+horizontal inundation distances, deaths, injuries, and damage for specific locations.
+
+### Information Sources
+
+1. `noaa`: [NGDC/WGS NOAA](https://www.ngdc.noaa.gov/hazard/tsu_db.shtml)
+
+"""
+type TsunamiRunup implements Node {
+  id: ID!
+
+  """Tsunami source document."""
+  tsunamiSource: ID
+
+  """
+  1. `noaa`: [NGDC/WGS NOAA](https://www.ngdc.noaa.gov/hazard/tsu_db.shtml)    
+  
+  """
+  infoSource: String
+
+  """
+  The unique numeric identifier of the record in [NOAA Tsunami Runup
+  database](https://www.ngdc.noaa.gov/hazard/tsu_db.shtml).
+  """
+  noaaTsunamiRunupId: Int
+
+  """
+  The unique numeric identifier of the record in [NOAA Tsunami Event
+  database](https://www.ngdc.noaa.gov/hazard/tsu_db.shtml).
+  """
+  noaaTsunamiEventId: Int
+
+  """
+  Source event date. Valid values: -2000 to Present
+  
+  Format +/-yyyy (-is B.C, +is A.D.)
+  The Date and Time are given in Universal Coordinated Time (also known as
+  Greenwich Mean Time). The local date may be one day different.    
+  
+  """
+  year: Int
+
+  """
+  Source event date. Valid values: 1-12
+  
+  The Date and Time are given in Universal Coordinated Time (also known as
+  Greenwich Mean Time). The local date may be one day different.    
+  
+  """
+  month: Int
+
+  """
+  Source event date. Valid values: 1-31 (where months apply)
+  
+  The Date and Time are given in Universal Coordinated Time (also known as
+  Greenwich Mean Time). The local date may be one day different.    
+  
+  """
+  day: Int
+  hour: Int
+  minute: Int
+  second: Float
+
+  """
+  A "?" in the Doubtful column indicates a doubtful runup entry.
+  An "M" indicates the waves likely had a meteorologic source, and thus were not true tsunami waves.    
+  
+  """
+  doubtful: String
+
+  """The country where the tsunami effects were observed."""
+  country: String
+
+  """
+  The State, Province or Prefecture where the tsunami effects were observed.
+  """
+  state: String
+
+  """
+  The location (city, state or island) where the tsunami effects were observed.
+  """
+  locationName: String
+
+  """
+  Valid values: -90 to +90
+  
+  Latitude: 0 to 90 (Northern Hemisphere) -90 to 0 (Southern Hemisphere)
+  
+  The latitude and longitude of the location (city, state or island) where the tsunami effects occurred.
+  
+  """
+  latitude: Float
+
+  """
+  Valid values: -180 to +180
+  
+  Longitude: 0 to 180 (Eastern Hemisphere) -180 to 0 (Western Hemisphere)
+  
+  The latitude and longitude of the location (city, state or island) where the tsunami effects occurred.    
+  
+  """
+  longitude: Float
+
+  """
+  Regional boundaries are based on frequency of occurrence of tsunamigenic
+  events, geophysical relations, risk in distant areas and political justification.
+  
+  - 77 =	West Coast of Africa
+  - 78 =	Central Africa
+  - 73 =	Northeast Atlantic Ocean
+  - 72 =	Northwest Atlantic Ocean
+  - 70 =	Southeast Atlantic Ocean
+  - 71 =	Southwest Atlantic Ocean
+  - 75 =	E. Coast USA and Canada, St Pierre and Miquelon
+  - 76 =	Gulf of Mexico
+  - 74 =	Caribbean Sea and Bermuda
+  - 40 =	Black Sea and Caspian Sea
+  - 50 =	Mediterranean Sea
+  - 30 =	Red Sea and Persian Gulf
+  - 60 =	Indian Ocean (including west coast of Australia)
+  - 87 =	Alaska (including Aleutian Islands)
+  - 84 =	China, North and South Korea, Philippines, Taiwan
+  - 81 =	E Coast Australia, New Zealand, South Pacific Is.
+  - 80 =	Hawaii, Johnston Atoll, Midway I
+  - 83 =	E. Indonesia (Pacific Ocean) and Malaysia
+  - 82 =	New Caledonia, New Guinea, Solomon Is., Vanuatu
+  - 86 =	Kamchatka and Kuril Islands
+  - 85 =	Japan
+  - 88 =	West Coast of North and Central America
+  - 89 =	West Coast of South America    
+  
+  """
+  regionCode: Int
+
+  """The distance from the tsunami event source to the runup location."""
+  distanceFromSource: Float
+
+  """
+  Valid values: 1-31 (where months apply)
+  
+  The Date and Time are given in Universal Coordinated Time (also known as
+  Greenwich Mean Time). The local date may be one day different.    
+  
+  """
+  arrivalDay: Int
+  arrivalHour: Int
+  arrivalMinute: Int
+
+  """
+  The travel time is the time in hours and minutes that it took the initial
+  tsunami wave to travel from the source to the location of effects.
+  """
+  travelTimeHours: Int
+
+  """
+  The travel time is the time in hours and minutes that it took the initial
+  tsunami wave to travel from the source to the location of effects.
+  """
+  travelTimeMinutes: Int
+
+  """
+  The maximum water height above sea level in meters. See image and text below
+  for more information. If the type of measurement is:
+  
+  - Type 1: Water height - Eyewitness observation - the maximum elevation the wave.
+  - Type 2: Tide Gauge - half of the maximum height (minus the normal tide)of a
+  tsunami wave recorded at the coast by a tide gauge. Also called the amplitude.
+  - Type 3: Deep Ocean Gauge - half of the maximum height (minus the normal
+  tide) of a tsunami wave recorded in the open ocean by a seafloor bottom
+  pressure recording system.
+  - Type 4: Water height (Post-tsunami survey measurement) - the maximum elevation the wave.
+  - Type 5: Runup Height (Post-tsunami survey measurement) - the maximum
+  elevation the wave reaches at the maximum inundation.
+  - Type 8: Runup Height in Harbor (Post-tsunami survey measurement) - water height in the harbor.
+  - Type 10: Flow Depth (Post-tsunami survey measurement) depth of the water.
+  - Type 9: Splash mark (Post-tsunami survey measurement)
+  - Type 6: Atmospheric Wave - Tsunami-like phenomena generated by
+  meteorological or atmospheric disturbances. These waves can be produced by
+  atmospheric gravity waves, pressure jumps, frontal passages, squalls, gales,
+  typhoons, hurricanes and other atmospheric sources. Meteotsunamis have the
+  same temporal and spatial scales as tsunami waves and can similarly devastate
+  coastal areas, especially in bays and inlets with strong amplification and
+  well-defined resonant properties. Sometimes referred to as rissaga. The water
+  height definition for an atmospheric wave depends on whether it was measured
+  by a tide gauge (2), eyewitness (1), or field survey (4,5).
+  - Type 7: Seiche - A standing wave oscillating in a partially or fully
+  enclosed body of water. It may be initiated by long period seismic waves (an
+  earthquake), wind and water waves, or a tsunami. The water height definition
+  for a seiche depends on whether it was measured by a tide gauge (2),
+  eyewitness (1), or field survey (4,5).
+  
+  ![Tsunami hydrodynamic data terminology](https://www.ngdc.noaa.gov/hazard/img/IOC_37_figV3.jpg)
+  
+  Figure V.3. Tsunami hydrodynamic data terminology. From the UNESCO-IOC Post
+  Tsunami Survey Field Guide, 2nd edition, IOC Manuals and Guides No. 37, p. 48:
+  
+  A number of terms are used to describe the overland flow of the tsunami
+  (Figure V.3). It is essential to use the appropriate term for the types of
+  measurements used. Important quantities include the tsunami flow depth (code
+  10), tsunami height (code 4), the runup height (code 5) and the inundation
+  distance. Runup is the maximum ground elevation wetted by the tsunami on a
+  sloping shoreline. In the simplest case, the runup value is recorded at the
+  maximum inundation distance - the horizontal distance flooded by the wave.
+  Flow depth is the depth of the tsunami flood over the local terrain height
+  while the tsunami height is the total elevation of the water free surface
+  above a reference datum. In some cases where the ground topography is flat,
+  large tsunamis can penetrate for hundreds of metres, and several kilometres
+  inland. In such cases it may not be practical to quantitatively measure
+  inundation distances to the furthest inland extent. In such cases, it is most
+  useful to estimate the tsunami height and flow depths close to the shoreline
+  and as far inland as the conditions and circumstances allow.    
+  
+  """
+  waterHeight: Float
+
+  """The maximum horizontal distance of inland flooding (in meters)"""
+  horizontalInundation: Float
+
+  """
+  Valid values: 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+  
+  See image and text below for more information.
+  
+  - 1 = Eyewitness measurement
+  - 5 = Runup Height, Post-tsunami survey measurement
+  - 4 = Water height, Post-tsunami survey measurement
+  - 8 = Water height in harbor, Post-tsunami survey measurement
+  - 10 = Flow Depth, Post-tsunami survey measurement
+  - 9 = Splash mark, Post-tsunami survey measurement
+  - 2 = Tide-gauge measurement
+  - 3 = Deep ocean gauge
+  - 6 = Atmospheric Wave
+  - 7 = Seiche
+  
+  ![Tsunami hydrodynamic data terminology](https://www.ngdc.noaa.gov/hazard/img/IOC_37_figV3.jpg)
+  
+  Figure V.3. Tsunami hydrodynamic data terminology. From the UNESCO-IOC Post
+  Tsunami Survey Field Guide, 2nd edition, IOC Manuals and Guides No. 37, p. 48:
+  
+  A number of terms are used to describe the overland flow of the tsunami
+  (Figure V.3). It is essential to use the appropriate term for the types of
+  measurements used. Important quantities include the tsunami flow depth (code
+  10), tsunami height (code 4), the runup height (code 5) and the inundation
+  distance. Runup is the maximum ground elevation wetted by the tsunami on a
+  sloping shoreline. In the simplest case, the runup value is recorded at the
+  maximum inundation distance - the horizontal distance flooded by the wave.
+  Flow depth is the depth of the tsunami flood over the local terrain height
+  while the tsunami height is the total elevation of the water free surface
+  above a reference datum. In some cases where the ground topography is flat,
+  large tsunamis can penetrate for hundreds of metres, and several kilometres
+  inland. In such cases it may not be practical to quantitatively measure
+  inundation distances to the furthest inland extent. In such cases, it is most
+  useful to estimate the tsunami height and flow depths close to the shoreline
+  and as far inland as the conditions and circumstances allow.
+  
+  """
+  typeOfMeasurement: Int
+
+  """
+  The period is in minutes and, when available, is the period of the first cycle.
+  """
+  period: Float
+
+  """
+  The first motion of the wave whether rise or fall.
+  
+  - R = Rise
+  - F = Fall    
+  
+  """
+  firstMotion: String
+
+  """Deaths from the tsunami at the specific runup location."""
+  deaths: Int
+
+  """
+  Valid values: 0 to 4
+  
+  When a description was found in the historical literature instead of an actual
+  number of deaths, this value was coded and listed in the Deaths De column. If
+  the actual number of deaths was listed, a descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 deaths)
+  - 2 = Some (~51 to 100 deaths)
+  - 3 = Many (~101 to 1000 deaths)
+  - 4 = Very Many (~1001 or more deaths)    
+  
+  """
+  deathsDescription: Int
+
+  """
+  Whenever possible, numbers of injuries from the tsunami at the specific runup
+  location are listed; may also include injuries from the earthquake that
+  triggered the tsunami.
+  """
+  injuries: Int
+
+  """
+  Valid values: 0 to 4
+  
+  When a description was found in the historical literature instead of an actual
+  number of injuries, this value was coded and listed in the Injuries De column.
+  If the actual number of injuries was listed, a descriptor was also added for
+  search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 injuries)
+  - 2 = Some(~51 to 100 injuries)
+  - 3 = Many (~101 to 1000 injuries)
+  - 4 = Very Many (~1001 or more injuries)    
+  
+  """
+  injuriesDescription: Int
+
+  """
+  The value in the Damage column should be multipled by 1,000,000 to obtain the actual dollar amount.
+  
+  When a dollar amount for damage was found in the literature, it was listed in
+  the Damage column in millions of U.S. dollars. The dollar value listed is the
+  value at the time of the event. To convert the damage to current dollar values
+  today, please use the Consumer Price Index Calculator. Monetary conversion
+  tables for the time of the event were used to convert foreign currency to U.S. dollars.    
+  
+  """
+  damageMillionsDollars: Float
+
+  """
+  Description of Damage from the Tsunami at the Runup Location:
+  For those events not offering a monetary evaluation of damage, the following
+  five-level scale was used to classify damage (1990 dollars) and was listed in
+  the Damage De column. If the actual dollar amount of damage was listed, a
+  descriptor was also added for search purposes.
+  
+  - 0 = NONE
+  - 1 = LIMITED (roughly corresponding to less than $1 million)
+  - 2 = MODERATE (~$1 to $5 million)
+  - 3 = SEVERE (~>$5 to $24 million)
+  - 4 = EXTREME (~$25 million or more)
+  
+  When possible, a rough estimate was made of the dollar amount of damage based
+  upon the description provided, in order to choose the damage category. In many
+  cases, only a single descriptive term was available. These terms were
+  converted to the damage categories based upon the authors apparent use of the
+  term elsewhere. In the absence of other information, LIMITED is considered
+  synonymous with slight, minor, and light, SEVERE as synonymous with major,
+  extensive, and heavy, and EXTREME as synonymous with catastrophic.
+  
+  Note: The descriptive terms relate approximately to current dollar values.    
+  
+  """
+  damageDescription: Int
+
+  """
+  Number of Houses Damaged:
+  Valid values: 0 to
+  
+  Whenever possible, number of houses damaged by the tsunami at the specific
+  runup location are listed; may also include houses damaged by the earthquake
+  that triggered the tsunami.    
+  
+  """
+  housesDamaged: Int
+
+  """
+  Description of Houses Damaged by the Tsunami at the Runup Location:
+    Valid values: 0 to 4
+    
+    For those events not offering an exact number of houses damaged, the
+  following four-level scale was used to classify the damage and was listed in
+  the Houses Damaged De column. If the actual number of houses damaged was
+  listed, a descriptor was also added for search purposes.
+    
+    0 = None
+    1 = Few (~1 to 50 houses)
+    2 = Some (~51 to 100 houses)
+    3 = Many (~101 to 1000 houses)
+    4 = Very Many (~1001 or more houses)      
+  
+  """
+  housesDamagedDescription: Int
+
+  """
+  Whenever possible, number of houses destroyed by the tsunami at the specific
+  runup location are listed; may also include houses destroyed by the earthquake
+  that triggered the tsunami.
+  """
+  housesDestroyed: Int
+
+  """
+  Description of Houses Destroyed by the Tsunami at the Runup Location:
+  Valid values: 0 to 4
+  
+  For those events not offering an exact number of houses destroyed, the
+  following four-level scale was used to classify the destruction and was listed
+  in the Houses Destroyed De column. If the actual number of houses destroyed
+  was listed, a descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 houses)
+  - 2 = Some (~51 to 100 houses)
+  - 3 = Many (~101 to 1000 houses)
+  - 4 = Very Many (~1001 or more houses)    
+  
+  """
+  housesDestroyedDescription: Int
+}
+
+type TsunamiRunupsConnection {
+  pageInfo: PageInfo!
+  edges: [TsunamiRunupsEdge!]!
+  aggregate: Aggregate
+}
+
+type TsunamiRunupsEdge {
+  node: TsunamiRunup!
+  cursor: String!
+}
+
+"""
+Information on the source of the tsunami.
+
+### Information Sources
+
+1. `noaa`: [NOAA NGDC/WDS](https://www.ngdc.noaa.gov/hazard/tsu_db.shtml)
+
+### Variable Definitions for the Tsunami Source Events
+
+- ID
+- Date: Year, Month, Day, Hour, Minute, Second
+- Location: Latitude, Longitude, Location Name, State, Country, Region Code
+- Cause Code for the Tsunami
+- If the tsunami source was an Earthquake:
+  - Focal Depth,
+  - Primary Magnitude
+- Tsunami Source Event Measurements:
+  - Tsunami Event Validity
+  - Maximum Water Height
+  - Tsunami Magnitudes: Abe, Iida-Imamura
+  - Tsunami Intensity: Soloviev
+  - Tsunami Warning Status
+- Tsunami Effects:
+  - Number of Deaths, Deaths Description:
+  - Number of Missing, Missing Description
+  - Number of Injuries, Injuries Description
+  - Damage Millions Dollars, Damage Description
+  - Number of Houses Destroyed, Houses Destroyed Description
+  - Number of Houses Damaged, Houses Damaged Description
+- Tsunami and Source Event Total Effects:
+  - Total Number of Deaths, Total Deaths Description
+  - Total Number of Missing, Total Missing Description
+  - Total Number of Injuries, Total Injuries Description
+  - Total Damage in Millions Dollars Total Damage Description
+  - Total Number of Houses Destroyed, Total Houses Destroyed Description
+  - Total Number of Houses Damaged, Total Houses Damaged Description
+
+"""
+type TsunamiSource implements Node {
+  id: ID!
+
+  """Year of tsunami source event"""
+  year: Int
+
+  """Month of tsunami source event"""
+  month: Int
+
+  """Day of tsunami source event"""
+  day: Int
+
+  """Hour of tsunami source event"""
+  hour: Int
+
+  """Minute of tsunami source event"""
+  minute: Int
+
+  """Second of tsunami source event"""
+  second: Float
+
+  """
+  Valid values: -1 to 4
+  
+  Validity of the actual tsunami occurrence is indicated by a numerical rating of the reports of that event:
+  
+  - 4 = definite tsunami
+  - 3 = probable tsunami
+  - 2 = questionable tsunami
+  - 1 = very doubtful tsunami
+  - 0 = event that only caused a seiche or disturbance in an inland river
+  - -1 = erroneous entry
+  
+  """
+  eventValidity: Int
+
+  """
+  Valid values: 0 to 11
+  
+  The source of the tsunami:
+  
+  - 0 = Unknown
+  - 1 = Earthquake
+  - 2 = Questionable Earthquake
+  - 3 = Earthquake and Landslide
+  - 4 = Volcano and Earthquake
+  - 5 = Volcano, Earthquake, and Landslide
+  - 6 = Volcano
+  - 7 = Volcano and Landslide
+  - 8 = Landslide
+  - 9 = Meteorological
+  - 10 = Explosion
+  - 11 = Astronomical Tide    
+  
+  """
+  causeCode: Int
+
+  """
+  Valid values: 0 to 700 km. The depth of the earthquake is given in kilometers.    
+  
+  """
+  focalDepth: Float
+
+  """
+  Valid values: 0.0 to 9.9
+  
+  The value in this column contains the primary earthquake magnitude. Magnitude
+  measures the energy released at the source of the earthquake. Magnitude is
+  determined from measurements on seismographs. For pre-instrumental events, the
+  magnitudes are derived from intensities. There are several different scales
+  for measuring earthquake magnitudes. The primary magnitude is chosen from the
+  available magnitude scales in this order:
+  
+  - Mw Magnitude
+  - Ms Magnitude
+  - Mb Magnitude
+  - Ml Magnitude
+  - Mfa Magnitude
+  - Unknown Magnitude    
+  
+  """
+  primaryMagnitude: Float
+
+  """
+  The Country where the tsunami source occurred (For example enter: Japan or Russia)    
+  
+  """
+  country: String
+
+  """
+  The two-letter State or Province abbreviation where the Earthquake occurred.
+  """
+  state: String
+
+  """
+  The Country, State, Province or Island where the tsunami source occurred (For example enter: Japan or Honshu)
+  
+  This is only an approximate geographic location. Events prior to 1900 were not
+  instrumentally located, therefore, the location given is based on the latitude
+  and longitude of the city where the maximum effects occurred. If there are
+  different spellings of a city name the additional names are in parentheses.    
+  
+  """
+  locationName: String
+  latitude: Float
+  longitude: Float
+
+  """
+  Regional boundaries are based on frequency of occurrence of tsunamigenic
+  events, geophysical relations, risk in distant areas and political justification.
+  
+  - 77 =	West Coast of Africa
+  - 78 =	Central Africa
+  - 73 =	Northeast Atlantic Ocean
+  - 72 =	Northwest Atlantic Ocean
+  - 70 =	Southeast Atlantic Ocean
+  - 71 =	Southwest Atlantic Ocean
+  - 75 =	E. Coast USA and Canada, St Pierre and Miquelon
+  - 76 =	Gulf of Mexico
+  - 74 =	Caribbean Sea
+  - 40 =	Black Sea and Caspian Sea
+  - 50 =	Mediterranean Sea
+  - 30 =	Red Sea and Persian Gulf
+  - 60 =	Indian Ocean (including west coast of Australia)
+  - 87 =	Alaska (including Aleutian Islands)
+  - 84 =	China, North and South Korea, Philippines, Taiwan
+  - 81 =	E. Coast Australia, New Zealand, South Pacific Is.
+  - 80 =	Hawaii, Johnston Atoll, Midway I
+  - 83 =	E. Indonesia (Pacific Ocean) and Malaysia
+  - 82 =	New Caledonia, New Guinea, Solomon Is., Vanuatu
+  - 86 =	Kamchatka and Kuril Islands
+  - 85 =	Japan
+  - 88 =	West Coast of North and Central America
+  - 89 =	West Coast of South America    
+  
+  """
+  regionCode: Int
+
+  """
+  The maximum water height above sea level in meters for this event. If the type of measurement of the runup was a:
+  
+  - Tide Gauge - half of the maximum height (minus the normal tide)of a tsunami wave recorded at the coast by a tide gauge.
+  - Runup Height - the maximum elevation the wave reaches at the maximum inundation.
+  
+  """
+  maxWaterHeight: Float
+
+  """
+  Valid values: -5 to 10
+  Abe defined two different tsunami magnitude amplitudes. His first tsunami magnitude (1979) is:
+  
+  Mt = logH + B
+  
+  where H is the maximum single crest or trough amplitude of the tsunami waves
+  (in meters) and B a constant. The second definition (1981) is:
+  
+  Mt = logH + alogR + D
+  
+  where R is the distance in km from the earthquake epicenter to the tide
+  station along the shortest oceanic path, and a and D are constants.    
+  
+  """
+  tsunamiMagnitudeAbe: Float
+
+  """
+  Valid values: -5 to 10
+  Tsunami magnitude (M) is defined by Iida and others (1967) as
+  
+  M = log2h, where "h" is the maximum runup height of the wave.
+  
+  """
+  tsunamiMagnitudeIida: Float
+
+  """
+  Valid values: -5 to 10
+  Tsunami intensity is defined by Soloviev and Go (1974) as
+  
+  I = log2(21/2 * h), where "h" is the maximum runup height of the wave.   
+  
+  """
+  tsunamiIntensitySoloviev: Float
+
+  """
+  Valid values: -1 to 4
+  Warning Status of the Tsunami:
+  
+  - -1=Status unknown
+  - 0=no warning issued
+  - 1=PTW - Pacific-wide Tsunami Warning issued by PTWC
+  - 2=RTW - Regional Tsunami Warning issued by PTWC for areas having no TWS
+  - 3=LTW - Local Tsunami Warning issued by regional or national TWC
+  - 4=TIB - Tsunami Information or Attention Bulletin issued by any agency    
+  
+  """
+  warningStatus: Float
+
+  """
+  If an actual number of deaths due to the tsunami is known, enter a number in
+  this search field. If only a description is available such as "few", "some",
+  or "many", the database can be searched using the search field: Death
+  Description    
+  
+  """
+  deaths: Int
+
+  """
+  Valid values: 0 to 4
+  When a description was found in the historical literature instead of an actual
+  number of deaths, this value was coded and listed in the Deaths De column. If
+  the actual number of deaths was listed, a descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 deaths)
+  - 2 = Some (~51 to 100 deaths)
+  - 3 = Many (~101 to 1000 deaths)
+  - 4 = Very Many (~1001 or more deaths)
+  
+  """
+  deathsDescription: Int
+
+  """Whenever possible, numbers of Missing from the tsunami are listed."""
+  missing: Int
+
+  """
+  Valid values: 0 to 4
+  
+  When a description was found in the historical literature instead of an actual
+  number of missing, this value was coded and listed in the Missing De column.
+  If the actual number of missing was listed, a descriptor was also added for
+  search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 missing)
+  - 2 = Some(~51 to 100 missing)
+  - 3 = Many (~101 to 1000 missing)
+  - 4 = Very Many (~1001 or more missing)    
+  
+  """
+  missingDescription: Int
+
+  """Whenever possible, numbers of injuries from the tsunami are listed."""
+  injuries: Int
+
+  """
+  Valid values: 0 to 4
+  
+  When a description was found in the historical literature instead of an actual
+  number of injuries, this value was coded and listed in the Injuries De column.
+  If the actual number of injuries was listed, a descriptor was also added for
+  search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 injuries)
+  - 2 = Some(~51 to 100 injuries)
+  - 3 = Many (~101 to 1000 injuries)
+  - 4 = Very Many (~1001 or more injuries)    
+  
+  """
+  injuriesDescription: Int
+
+  """
+  The value in the Damage column should be multiplied by 1,000,000 to obtain the actual dollar amount.
+  
+  If an actual number of dollars in damage due to the tsunami is known, enter a
+  number in this search field. If only a description is available such as
+  "limited", "moderate", or "severe", the database can be searched using the
+  search field:Damage Description
+  
+  When a dollar amount for damage was found in the literature, it was listed in
+  the Damage column in millions of U.S. dollars. The dollar value listed is the
+  value at the time of the event. To convert the damage to current dollar
+  values, please use the [Consumer Price Index Calculator](https://www.ngdc.noaa.gov/nndc/DescribeField.jsp?dataset=101650&search_look=77&field_name=tsevent_vsqp.DAMAGE_MILLIONS_DOLLARS).
+  Monetary conversion tables for the time of the event were used to convert
+  foreign currency to U.S. dollars.  
+  
+  """
+  damageMillionsDollars: Float
+
+  """
+  Valid values: 0 to 4
+  
+  For those events not offering a monetary evaluation of damage, the following
+  five-level scale was used to classify damage (1990 dollars) and was listed in
+  the Damage Description column. If the **actual dollar amount of damage was
+  listed**, a descriptor was also added for search purposes.
+  
+  - 0 = NONE
+  - 1 = LIMITED (roughly corresponding to less than $1 million)
+  - 2 = MODERATE (~$1 to $5 million)
+  - 3 = SEVERE (~>$5 to $24 million)
+  - 4 = EXTREME (~$25 million or more)
+  
+  When possible, a rough estimate was made of the dollar amount of damage based
+  upon the description provided, in order to choose the damage category. In many
+  cases, only a single descriptive term was available. These terms were
+  converted to the damage categories based upon the authors apparent use of the
+  term elsewhere. In the absence of other information, LIMITED is considered
+  synonymous with slight, minor, and light, SEVERE as synonymous with major,
+  extensive, and heavy, and EXTREME as synonymous with catastrophic.
+  
+  Note: The descriptive terms relate approximately to current dollar values.    
+  
+  """
+  damageDescription: Int
+
+  """
+  Whenever possible, number of houses destroyed by the tsunami are listed.
+  """
+  housesDestroyed: Int
+
+  """
+  Valid values: 0 to 4
+  
+  For those events not offering an exact number of houses destroyed, the
+  following four-level scale was used to classify the destruction and was listed
+  in the Houses Destroyed De column. If the actual number of houses destroyed
+  was listed, a descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 houses)
+  - 2 = Some (~51 to 100 houses)
+  - 3 = Many (~101 to 1000 houses)
+  - 4 = Very Many (~1001 or more houses)    
+  
+  """
+  housesDestroyedDescription: Int
+
+  """
+  Whenever possible, number of houses damaged by the tsunami are listed.    
+  
+  """
+  housesDamaged: Int
+
+  """
+  Valid values: 0 to 4
+  
+  For those events not offering an exact number of houses damaged, the following
+  four-level scale was used to classify the damage and was listed in the Houses
+  Damaged De column. If the actual number of houses damaged was listed, a
+  descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 houses)
+  - 2 = Some (~51 to 100 houses)
+  - 3 = Many (~101 to 1000 houses)
+  - 4 = Very Many (~1001 or more houses)    
+  
+  """
+  housesDamagedDescription: Int
+
+  """
+  Whenever possible, numbers of deaths from the tsunami and source event are listed.
+  """
+  totalDeaths: Int
+
+  """
+  Valid values: 0 to 4
+  
+  When a description was found in the historical literature instead of an actual
+  number of deaths, this value was coded and listed in the Deaths De column. If
+  the actual number of deaths was listed, a descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 deaths)
+  - 2 = Some (~51 to 100 deaths)
+  - 3 = Many (~101 to 1000 deaths)
+  - 4 = Very Many (~1001 or more deaths)
+  
+  """
+  totalDeathsDescription: Int
+  totalMissing: Int
+
+  """
+  Valid values: 0 to 4
+  
+  When a description was found in the historical literature instead of an actual
+  number of missing, this value was coded and listed in the Missing Description
+  column. If the actual number of missing was listed, a descriptor was also
+  added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 missing)
+  - 2 = Some(~51 to 100 missing)
+  - 3 = Many (~101 to 1000 missing)
+  - 4 = Very Many (~1001 or more missing)
+  
+  """
+  totalMissingDescription: Int
+
+  """
+  Whenever possible, numbers of injuries from the tsunami and source event are listed.
+  """
+  totalInjuries: Int
+
+  """
+  Valid values: 0 to 4
+  
+  When a description was found in the historical literature instead of an actual
+  number of injuries, this value was coded and listed in the Injuries De column.
+  If the actual number of injuries was listed, a descriptor was also added for
+  search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 injuries)
+  - 2 = Some(~51 to 100 injuries)
+  - 3 = Many (~101 to 1000 injuries))
+  - 4 = Very Many (~1001 or more injuries)
+  
+  """
+  totalInjuriesDescription: Int
+
+  """
+  The value in the Damage column should be multipled by 1,000,000 to obtain the actual dollar amount.
+  
+  When a dollar amount for damage was found in the literature, it was listed in
+  the Damage column in millions of U.S. dollars. The dollar value listed is the
+  value at the time of the event. To convert the damage to current dollar
+  values, please use the [Consumer Price Index Calculator](https://www.ngdc.noaa.gov/nndc/DescribeField.jsp?dataset=101650&search_look=77&field_name=tsevent_vsqp.DAMAGE_MILLIONS_DOLLARS_TOTAL).
+  Monetary conversion tables for the time of the event were used to convert
+  foreign currency to U.S. dollars.    
+  
+  """
+  totalDamageMillionsDollars: Float
+
+  """
+  Valid values: 0 to 4
+  
+  For those events not offering a monetary evaluation of damage, the following
+  five-level scale was used to classify damage (1990 dollars) and was listed in
+  the Damage De column. If the actual dollar amount of damage was listed, a
+  descriptor was also added for search purposes.
+  
+  - 0 = NONE
+  - 1 = LIMITED (roughly corresponding to less than $1 million)
+  - 2 = MODERATE (~$1 to $5 million)
+  - 3 = SEVERE (~$5 to $25 million)
+  - 4 = EXTREME (~$25 million or more)
+  
+  When possible, a rough estimate was made of the dollar amount of damage based
+  upon the description provided, in order to choose the damage category. In many
+  cases, only a single descriptive term was available. These terms were
+  converted to the damage categories based upon the authors apparent use of the
+  term elsewhere. In the absence of other information, LIMITED is considered
+  synonymous with slight, minor, and light, SEVERE as synonymous with major,
+  extensive, and heavy, and EXTREME as synonymous with catastrophic.
+  
+  Note: The descriptive terms relate approximately to current dollar values.
+  
+  """
+  totalDamageMillionsDollarsDescription: Int
+
+  """
+  Whenever possible, number of houses destroyed by the tsunami and the source event are listed.
+  """
+  totalHousesDestroyed: Int
+
+  """
+  Valid values: 0 to 4
+  
+  For those events not offering an exact number of houses destroyed, the
+  following four-level scale was used to classify the destruction and was listed
+  in the Houses Destroyed De column. If the actual number of houses destroyed
+  was listed, a descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 houses)
+  - 2 = Some (~51 to 100 houses)
+  - 3 = Many (~101 to 1000 houses)
+  - 4 = Very Many (~1001 or more houses)
+  
+  """
+  totalHousesDestroyedDescription: Int
+
+  """
+  Whenever possible, number of houses damaged by the tsunami and the source event are listed.
+  """
+  totalHousesDamaged: Int
+
+  """
+  Valid values: 0 to 4
+  
+  For those events not offering an exact number of houses damaged, the following
+  four-level scale was used to classify the damage and was listed in the
+  **Houses Damaged Description** column. If the actual number of houses damaged
+  was listed, a descriptor was also added for search purposes.
+  
+  - 0 = None
+  - 1 = Few (~1 to 50 houses)
+  - 2 = Some (~51 to 100 houses)
+  - 3 = Many (~101 to 1000 houses)
+  - 4 = Very Many (~1001 or more houses)    
+  
+  """
+  totalHousesDamagedDescription: Int
+
+  """
+  Tsunami source event ID according to `noaa`: [NOAA NGDC/WDS](https://www.ngdc.noaa.gov/hazard/tsu_db.shtml).
+  
+  """
+  noaaTsunamiEventId: Int
+
+  """
+  1. `noaa`: [NOAA NGDC/WDS](https://www.ngdc.noaa.gov/hazard/tsu_db.shtml)
+  
+  """
+  infoSource: String
+}
+
+type TsunamiSourcesConnection {
+  pageInfo: PageInfo!
+  edges: [TsunamiSourcesEdge!]!
+  aggregate: Aggregate
+}
+
+type TsunamiSourcesEdge {
+  node: TsunamiSource!
+  cursor: String!
+}
